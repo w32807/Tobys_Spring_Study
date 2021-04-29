@@ -131,6 +131,28 @@
 		    <version>2.2.2</version>
 		</dependency>
 
+		<dependency>
+		    <groupId>org.springframework</groupId>
+		    <artifactId>spring-jdbc</artifactId>
+		    <version>3.0.7.RELEASE</version>
+		</dependency>
+		
+        <!-- Test -->
+        <dependency>
+            <groupId>junit</groupId>
+            <artifactId>junit</artifactId>
+            <version>4.12</version><!-- 수정 -->
+            <scope>test</scope>
+        </dependency>   
+        
+        <!-- Spring test 라이브러리 추가 -->
+        <!-- https://mvnrepository.com/artifact/org.springframework/spring-test -->
+        <dependency>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-test</artifactId>
+            <version>${org.springframework-version}</version>
+        </dependency>
+
 	</dependencies>
     <build>
         <plugins>

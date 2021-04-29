@@ -1,12 +1,17 @@
-package com.toby.spring;
+ package com.toby.spring;
 
+import java.sql.SQLException;
+
+import org.junit.Test;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.support.GenericXmlApplicationContext;
 
 import com.toby.spring.dao.UserDao;
+import com.toby.spring.domain.User;
 
 public class UserDaoTest {
-
+    // JUnit의 Test 코드로 전환
+    /*
     public static void main(String[] args) {
         // 스프링 Legacy 프로젝트가 아닐 때 ApplicationContext 사용하기
         // ApplicationContext context = new AnnotationConfigApplicationContext(DaoFactory.class);
@@ -21,12 +26,37 @@ public class UserDaoTest {
         
         System.out.println(dao1 == dao2);
         System.out.println(dao1.equals(dao2));
-        /*
         ConnectionMaker connectionMaker = new DConnectionMaker();
         
         // connection을 만드는 역할을, 클라이언트가 아닌 팩토리로 넘겨버림
         UserDao dao = new DaoFactory().userDao();
         System.out.println(dao);
-        */
+    }
+    */
+    
+    @Test
+    public void insertTest() {
+        ApplicationContext context = new GenericXmlApplicationContext("/applicationContext.xml");
+        UserDao dao = context.getBean("userDao", UserDao.class);
+        
+        User user = new User();
+        
+        user.setId("user");
+        user.setName("원준");
+        user.setPassword("1234");
+        try {
+            dao.add(user);
+            User user2 = dao.get(user.getId());
+            System.out.println(user2.getId());
+        } catch (ClassNotFoundException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        } catch (SQLException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
+        
+        
+        
     }
 }
