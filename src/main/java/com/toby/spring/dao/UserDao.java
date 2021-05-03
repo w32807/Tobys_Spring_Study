@@ -25,23 +25,34 @@ public class UserDao {
     private Connection c;
     private User user;
     
+    private JdbcContext jdbcContext;
+    
+    public void setJdbcContext(JdbcContext jdbcContext) {
+        this.jdbcContext = jdbcContext;
+    }
+
     /*
     public void setConnectionMaker(ConnectionMaker connectionMaker) {
         this.connectionMaker = connectionMaker;
     }
     */
-    public void add(User user) throws ClassNotFoundException, SQLException {
-        //Connection c = connectionMaker.makeConnection();
-        Connection c = dataSource.getConnection();
-        PreparedStatement ps = c.prepareStatement("insert into users (id, name, password) values(?,?,?)");
-        ps.setString(1, user.getId());
-        ps.setString(2, user.getName());
-        ps.setString(3, user.getPassword());
-        
-        ps.executeUpdate();
-        
-        ps.close();
-        c.close();
+    // 로컬 클래스에 변수를 전달하기 위해서 final로 선언해야 한다.
+    public void add(final User user) throws ClassNotFoundException, SQLException {
+        // add 메소드에서만 사용하는 class 이므로 로컬 클래스로 선언!
+        class AddStatement implements StatementStrategy{
+            @Override
+            public PreparedStatement makePreparedStatement(Connection c) throws SQLException {
+                PreparedStatement ps = c.prepareStatement("insert into users (id, name, password) values(?,?,?)");
+                ps.setString(1, user.getId());
+                ps.setString(2, user.getName());
+                ps.setString(3, user.getPassword());
+                
+                return ps;
+            }
+        }
+        StatementStrategy strategy = new AddStatement();
+        //jdbcContextWirhStatementStrategy(strategy);
+        this.jdbcContext.workWithStatementStrategy(strategy);
     }
     
     public User get(String id) throws ClassNotFoundException, SQLException {
@@ -69,12 +80,23 @@ public class UserDao {
     }
     
     public void deleteAll() throws SQLException{
-        Connection c = dataSource.getConnection();
-        
-        PreparedStatement ps = c.prepareStatement("delete from users");
+        /*Connection c = dataSource.getConnection();
+
+        PreparedStatement ps = c.prepareStatement("delete from users"); // 만약 여기서 오류가 나면, Connection은 닫히지 않은 채 유지된다.
         ps.executeUpdate();
         ps.close();
         c.close();
+        */
+        // 익명클래스로 전달
+        /*
+        this.jdbcContext.workWithStatementStrategy(new StatementStrategy() {
+            @Override
+            public PreparedStatement makePreparedStatement(Connection c) throws SQLException {
+                return c.prepareStatement("delete from users");
+            }
+        });
+        */
+        this.jdbcContext.excuteSql("delete from users");
     }
     
     public int getCount() throws SQLException{
@@ -89,4 +111,33 @@ public class UserDao {
         
         return count;
     }
+    
+    // DB 연결과, 자원 해제까지 공통으로 사용되는 메소드 -> JdbcContext 클래스로 이동
+    /*
+    public void jdbcContextWirhStatementStrategy(StatementStrategy stmt) throws SQLException {
+        Connection c = null;
+        PreparedStatement ps = null;
+        
+        try {
+            c = dataSource.getConnection();
+            ps = stmt.makePreparedStatement(c);
+            ps.executeUpdate();
+        } catch (SQLException e) {
+            throw e;
+        }finally {
+            if(ps != null) {
+                try {
+                    ps.close();
+                } catch (SQLException e) {
+                }
+            }
+            if(c != null) {
+                try {
+                    c.close();
+                } catch (SQLException e ) {
+                }
+            }
+        }
+    }
+    */
 }
