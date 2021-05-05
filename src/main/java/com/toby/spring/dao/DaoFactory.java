@@ -23,22 +23,22 @@ public class DaoFactory {
     
     // DConnection을 만들어서 반환
     @Bean // 오브젝트 생성을 담당한느 Ioc용 메소드라는 표시
-    public UserDao userDao() {
-        UserDao userDao = new UserDao();
+    public UserDaoJdbc userDao() {
+        UserDaoJdbc userDao = new UserDaoJdbc();
         userDao.setDataSource(dataSource());
         return userDao;
     }
     
     @Bean
-    public UserDao adminDao() {
-        UserDao userDao = new UserDao();
+    public UserDaoJdbc adminDao() {
+        UserDaoJdbc userDao = new UserDaoJdbc();
         userDao.setDataSource(dataSource());
         return userDao;
     }
     
     @Bean
-    public UserDao messageDao() {
-        UserDao userDao = new UserDao();
+    public UserDaoJdbc messageDao() {
+        UserDaoJdbc userDao = new UserDaoJdbc();
         userDao.setDataSource(dataSource());
         return userDao;
     }
