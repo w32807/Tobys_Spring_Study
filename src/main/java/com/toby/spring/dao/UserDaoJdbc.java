@@ -18,6 +18,7 @@ import org.springframework.jdbc.core.ResultSetExtractor;
 import org.springframework.jdbc.core.RowMapper;
 
 import com.mysql.cj.exceptions.MysqlErrorNumbers;
+import com.toby.spring.domain.Level;
 import com.toby.spring.domain.User;
 
 public class UserDaoJdbc implements UserDao{
@@ -95,7 +96,8 @@ public class UserDaoJdbc implements UserDao{
             }
         }
         */
-        this.jdbcTemplate.update("insert into users (id, name, password) values(?,?,?)", user.getId(), user.getName(), user.getPassword());
+        this.jdbcTemplate.update("insert into users (id, name, password, Level, Login, Recommand) values(?,?,?,?,?,?)"
+                , user.getId(), user.getName(), user.getPassword(), user.getLevel().intValue(), user.getLogin(), user.getRecommand());
     }
     
     public User get(String id){
@@ -203,6 +205,9 @@ public class UserDaoJdbc implements UserDao{
             user.setId(rs.getString("id"));
             user.setName(rs.getString("name"));
             user.setPassword(rs.getString("password"));
+            user.setLevel(Level.valueOf(rs.getInt("Level")));
+            user.setLogin(rs.getInt("Login"));
+            user.setRecommand(rs.getInt("Recommand"));
             return user;
         }
     };
@@ -234,4 +239,10 @@ public class UserDaoJdbc implements UserDao{
         }
     }
     */
+    
+    @Override
+    public void update(User user) {
+        this.jdbcTemplate.update("update users set name = ?, password = ?, Level = ?, Login = ?, Recommand = ? where id = ? "
+                ,user.getName(), user.getPassword(), user.getLevel().intValue(), user.getLogin(), user.getRecommand(), user.getId());
+    }
 }
