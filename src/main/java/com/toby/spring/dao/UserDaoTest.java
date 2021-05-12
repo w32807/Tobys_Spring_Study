@@ -16,7 +16,7 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 import com.toby.spring.domain.Level;
 import com.toby.spring.domain.User;
-import com.toby.spring.service.UserService;
+import com.toby.spring.service.UserServiceImpl;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(locations = {"/applicationContext.xml"})
@@ -39,9 +39,9 @@ public class UserDaoTest {
                 ,"root", "1234", true);
         dao.setDataSource(dataSource);
         
-        user1 = new User("id1","name1","ps1", Level.BASIC, 1,0);
-        user2 = new User("id2","name2","ps2", Level.BASIC, 1,0);
-        user3 = new User("id3","name3","ps3", Level.BASIC, 1,0);
+        user1 = new User("id1","name1","ps1", Level.BASIC, 1,0, "email1");
+        user2 = new User("id2","name2","ps2", Level.BASIC, 1,0, "email2");
+        user3 = new User("id3","name3","ps3", Level.BASIC, 1,0, "email3");
     }
     @Test
     public void insertTest() throws Exception{

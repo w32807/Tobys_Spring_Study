@@ -11,6 +11,7 @@ import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
+import org.springframework.transaction.PlatformTransactionManager;
 
 import com.toby.spring.dao.UserDao;
 import com.toby.spring.domain.Level;
@@ -18,33 +19,40 @@ import com.toby.spring.domain.User;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(locations = {"/applicationContext.xml"})
-public class UserServiceTest {
+public class UserServiceImplTest {
 
     @Autowired
-    UserService userService;
+    UserServiceImpl userServiceImpl;
+    
+    @Autowired
+    PlatformTransactionManager transactionManager;
     
     @Autowired
     UserDao userDao;
     
     List<User> users;
+    
     @Before
     public void setup() {
         users = Arrays.asList(
-                new User("id1","name1","ps1", Level.BASIC, UserService.MIN_LOGOUT_FOR_SILVER-1,30),
-                new User("id2","name2","ps2", Level.BASIC, UserService.MIN_LOGOUT_FOR_SILVER,22),
-                new User("id3","name3","ps3", Level.SILVER, 94,UserService.MIN_RECOMMAND_FOR_GOLD-1),
-                new User("id4","name4","ps4", Level.GOLD, 12,11),
-                new User("id5","name5","ps5", Level.SILVER, 1001,49),
-                new User("id6","name6","ps6", Level.BASIC, 1,0)
+                new User("id1","name1","ps1", Level.BASIC, UserServiceImpl.MIN_LOGOUT_FOR_SILVER-1,30 , "email"),
+                new User("id2","name2","ps2", Level.BASIC, UserServiceImpl.MIN_LOGOUT_FOR_SILVER,22 , "email"),
+                new User("id3","name3","ps3", Level.SILVER, 94,UserServiceImpl.MIN_RECOMMAND_FOR_GOLD-1 , "email"),
+                new User("id4","name4","ps4", Level.GOLD, 12,11 , "email"),
+                new User("id5","name5","ps5", Level.SILVER, 1001,49 , "email"),
+                new User("id6","name6","ps6", Level.BASIC, 1,0 , "email")
                 );
     }
     
-    @Test
-    public void upgradeTest() {
+    //@Test
+    public void upgradeLevels() {
         userDao.deleteAll();
         for(User user : users) userDao.add(user);
         
-        userService.upgradeLevels();
+        MockMailSender mockMailSender = new MockMailSender();
+        userServiceImpl.setMailSender(mockMailSender);
+        
+        userServiceImpl.upgradeLevels();
         checkLevel(users.get(0), Level.BASIC);
         checkLevel(users.get(1), Level.SILVER);
         checkLevel(users.get(2), Level.GOLD);
@@ -76,15 +84,18 @@ public class UserServiceTest {
         User userWithoutLevel = users.get(0);
         userWithoutLevel.setLevel(null);
         
-        userService.add(userWithLevel);
-        userService.add(userWithoutLevel);
+        userServiceImpl.add(userWithLevel);
+        userServiceImpl.add(userWithoutLevel);
         
         User userWithLevelRead = userDao.get(userWithLevel.getId());
         User userWithoutLevelRead = userDao.get(userWithoutLevel.getId());
         
         assertEquals(userWithLevel.getLevel(), userWithLevelRead.getLevel());
         assertEquals(userWithoutLevelRead.getLevel(), Level.BASIC);
-        
-        
+    }
+    
+    @Test
+    public void upgradeAllorNothing() throws Exception{
+        userServiceImpl.upgradeLevels();
     }
 }

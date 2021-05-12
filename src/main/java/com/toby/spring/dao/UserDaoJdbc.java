@@ -96,8 +96,8 @@ public class UserDaoJdbc implements UserDao{
             }
         }
         */
-        this.jdbcTemplate.update("insert into users (id, name, password, Level, Login, Recommand) values(?,?,?,?,?,?)"
-                , user.getId(), user.getName(), user.getPassword(), user.getLevel().intValue(), user.getLogin(), user.getRecommand());
+        this.jdbcTemplate.update("insert into users (id, name, password, Level, Login, Recommand, Email) values(?,?,?,?,?,?,?)"
+                , user.getId(), user.getName(), user.getPassword(), user.getLevel().intValue(), user.getLogin(), user.getRecommand(), user.getEmail());
     }
     
     public User get(String id){

@@ -5,12 +5,22 @@ public class User {
     String id;
     String name;
     String password;
+    String email;
     
     // 서비스 추상화 하면서 추가
     Level level;
     int login;
     int recommand;
     
+    
+    public String getEmail() {
+        return email;
+    }
+
+    public void setEmail(String email) {
+        email = email;
+    }
+
     public Level getLevel() {
         return level;
     }
@@ -35,13 +45,14 @@ public class User {
         this.recommand = recommand;
     }
 
-    public User(String id, String name, String password, Level level, int login, int recommand) {
+    public User(String id, String name, String password, Level level, int login, int recommand, String email) {
         this.id = id;
         this.name = name;
         this.password = password;
         this.level = level;
         this.login = login;
         this.recommand = recommand;
+        this.email = email;
     }
     
     public User() {}

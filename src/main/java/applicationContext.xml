@@ -8,10 +8,23 @@
         <property name="dataSource" ref="dataSource"/>
     </bean>
     
-    <bean id="userService" class="com.toby.spring.service.UserService">
-        <property name="userDao" ref="userDao"/>
+    <bean id="userService" class="com.toby.spring.service.UserServiceTx">
+        <property name="transactionManager" ref="transactionManager"/>
+        <property name="userService" ref="userServiceImpl"/>
     </bean>
     
+    <bean id="userServiceImpl" class="com.toby.spring.service.UserServiceImpl">
+        <property name="userDao" ref="userDao"/>
+        <!-- <property name="mailSender" ref="mailSender"/> -->
+    </bean>
+    
+    <bean id="transactionManager" class="org.springframework.jdbc.datasource.DataSourceTransactionManager">
+        <property name="dataSource" ref="dataSource"/>
+    </bean>
+    
+    <bean id="mailSender" class="org.springframework.mail.javamail.JavaMailSenderImpl">
+        <property name="host" value="mail.server.com"/>
+    </bean>
     <!-- MySQL은 구체적으로 서버 시간대를 정해줘야 한다. -->
     <bean id="dataSource" class="org.springframework.jdbc.datasource.SimpleDriverDataSource">
         <property name="driverClass" value="com.mysql.cj.jdbc.Driver"/>
