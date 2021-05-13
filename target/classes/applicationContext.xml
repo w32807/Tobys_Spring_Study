@@ -32,6 +32,10 @@
         <property name="username" value="root"/>
         <property name="password" value="1234"/>
     </bean>
+    
+    <bean id="message" class="com.toby.spring.beans.MessageFactoryBean">
+        <property name="text" value="Factory Bean"/>
+    </bean>
 </beans>
 
 

@@ -3,6 +3,7 @@ package com.toby.spring.service;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 
+import java.lang.reflect.Proxy;
 import java.util.Arrays;
 import java.util.List;
 
@@ -16,6 +17,7 @@ import org.springframework.transaction.PlatformTransactionManager;
 import com.toby.spring.dao.UserDao;
 import com.toby.spring.domain.Level;
 import com.toby.spring.domain.User;
+import com.toby.spring.proxy.TransactionHandler;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(locations = {"/applicationContext.xml"})
@@ -96,6 +98,12 @@ public class UserServiceImplTest {
     
     @Test
     public void upgradeAllorNothing() throws Exception{
-        userServiceImpl.upgradeLevels();
+        TransactionHandler txHandler = new TransactionHandler();
+        txHandler.setTarget(userServiceImpl);
+        txHandler.setTransactionManager(transactionManager);
+        txHandler.setPattern("upgradeLevels");
+        
+        UserService txUserService = (UserService)Proxy.newProxyInstance(getClass().getClassLoader(), new Class[] {UserService.class}, txHandler);
+        txUserService.upgradeLevels();
     }
 }
