@@ -8,11 +8,6 @@
         <property name="dataSource" ref="dataSource"/>
     </bean>
     
-    <bean id="userService" class="com.toby.spring.service.UserServiceTx">
-        <property name="transactionManager" ref="transactionManager"/>
-        <property name="userService" ref="userServiceImpl"/>
-    </bean>
-    
     <bean id="userServiceImpl" class="com.toby.spring.service.UserServiceImpl">
         <property name="userDao" ref="userDao"/>
         <!-- <property name="mailSender" ref="mailSender"/> -->
@@ -36,6 +31,39 @@
     <bean id="message" class="com.toby.spring.beans.MessageFactoryBean">
         <property name="text" value="Factory Bean"/>
     </bean>
+    
+    <!-- transaction advice를 bean으로 등록 -->
+    <bean id="transactionAdvice" class="com.toby.spring.service.TransactionAdvice">
+        <property name="transactionManager" value="transactionManager"/>
+    </bean>
+    
+    <!-- spring에서 제공하는 class를 구현하여 pointcut 생성 -->
+    <bean id="transactionPointcut" class="org.springframework.aop.support.NameMatchMethodPointcut">
+        <property name="mappedName" value="upgrade*"/>
+    </bean>
+    
+    <bean id="transactionAdvisor" class="org.springframework.aop.support.DefaultPointcutAdvisor">
+        <property name="pointcut" value="transactionPointcut"/>
+        <property name="advice" value="transactionAdvice"/>
+    </bean>
+    
+    
+    <!-- <bean id="userService" class="com.toby.spring.service.UserServiceTx">
+        <property name="transactionManager" ref="transactionManager"/>
+        <property name="userService" ref="userServiceImpl"/>
+    </bean> -->
+    <!-- 트랜잭션을 적용한 userService  -->
+    <bean id="userService" class="org.springframework.aop.framework.ProxyFactoryBean">
+        <property name="target" value="userServiceImpl"/>
+        <property name="interceptorNames">
+            <list>
+                <value>transactionAdvisor</value> <!-- 여러개의 어드바이저를 list 형식으로 등록해줌 -->
+            </list>
+        </property>
+        <property name="pointcut" value="transactionPointcut"/>
+        <property name="advice" value="transactionAdvice"/>
+    </bean>
+    
 </beans>
 
 
