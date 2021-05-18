@@ -14,14 +14,13 @@ public class NameMatchClassMethodPointcut extends NameMatchMethodPointcut{
     static class SimpleClassFilter implements ClassFilter{
         String mappedName;
         
-        
         public SimpleClassFilter(String mappedName) {
             this.mappedName = mappedName;
         }
 
         @Override
         public boolean matches(Class<?> clazz) {
-            // getSimpleName는 패키지 경로가 포함되지 않은 순수 클래스명만 가져올 때 사용
+            // getSimpleName는 패키지 경로가 포함되지 않은 순수 클래스명만 가져올 때 사용 
             return PatternMatchUtils.simpleMatch(mappedName, clazz.getSimpleName());
         }
     }
